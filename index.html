@@ -3,27 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
- <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="A simple, polished feedback form with zero-backend using Formspree." />
   <title>Atlas House</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/atlas.jpg">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="shortcut icon" href="/favicon.ico">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <!-- Remove this if you don't have an SVG -->
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="shortcut icon" href="favicon.ico">
   <meta name="theme-color" content="#111827">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-  <style>
     :root { color-scheme: light dark; }
     html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
   </style>
 </head>
+
 <body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900">
   <main class="max-w-md mx-auto p-6">
   <header class="mb-6 text-center">
@@ -35,7 +35,9 @@
 </header>
 
     <section id="card" class="rounded-2xl bg-white shadow-xl ring-1 ring-black/5 p-6">
-      <form id="form" class="space-y-5" novalidate aria-describedby="helper">
+      <form id="form" class="space-y-5" novalidate aria-describedby="helper"
+      action="https://formspree.io/f/mzzjnnja" method="POST">
+
         <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         <input type="hidden" id="subjectField" name="subject" value="New Feedback Submission" />
@@ -223,82 +225,114 @@
     </section>
   </main>
 
-  <script>
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mzzjnnja"; // live endpoint from your account
+<script>
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/mzzjnnja"; // live endpoint
 
-    const form = document.getElementById("form");
-    const submitBtn = document.getElementById("submitBtn");
-    const success = document.getElementById("success");
-    const errorToast = document.getElementById("errorToast");
+  const form = document.getElementById("form");
+  const submitBtn = document.getElementById("submitBtn");
+  const success = document.getElementById("success");
+  const errorToast = document.getElementById("errorToast");
 
-    function showError(id, msg) {
-      const el = document.querySelector(`[data-error-for="${id}"]`);
-      const input = document.getElementById(id);
-      if (el) el.textContent = msg;
-      if (el) el.classList.remove("hidden");
-      if (input) input.setAttribute("aria-invalid", "true");
+  function showError(id, msg) {
+    const el = document.querySelector(`[data-error-for="${id}"]`);
+    const input = document.getElementById(id);
+    if (el) el.textContent = msg;
+    if (el) el.classList.remove("hidden");
+    if (input) input.setAttribute("aria-invalid", "true");
+  }
+  function clearErrors() {
+    document.querySelectorAll("[data-error-for]").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll("[aria-invalid]").forEach(el => el.setAttribute("aria-invalid", "false"));
+  }
+
+  // Named handler so we can remove it when falling back to native submit
+  async function handleSubmit(e) {
+    e.preventDefault();
+    clearErrors(); 
+    errorToast.classList.add("hidden");
+
+    // Required fields
+    const required = ["name","phone","intent","type","city","area","bedrooms","bathrooms","price","currency","consent"];
+    let valid = true;
+    for (const id of required) {
+      const el = document.getElementById(id);
+      const value = el.type === "checkbox" ? el.checked : (el.value || "").trim();
+      if (!value) { showError(id, `Please fill out ${id}.`); valid = false; }
     }
-    function clearErrors() {
-      document.querySelectorAll("[data-error-for]").forEach(el => el.classList.add("hidden"));
-      document.querySelectorAll("[aria-invalid]").forEach(el => el.setAttribute("aria-invalid", "false"));
+
+    // Optional email format check
+    const email = (document.getElementById("email")?.value || "").trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { 
+      showError("email","Please enter a valid email."); 
+      valid = false; 
     }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearErrors(); errorToast.classList.add("hidden");
+    // Basic phone sanity (lenient; keeps +20 UX happy)
+    const phone = (document.getElementById("phone")?.value || "").trim();
+    if (!/^[+\d][\d\s().-]{6,}$/.test(phone)) {
+      showError("phone","Please enter a valid phone number.");
+      valid = false;
+    }
 
-      // Simple client validation
-      const required = ["name","phone","intent","type","city","area","bedrooms","bathrooms","price","currency","consent"];
-      let valid = true;
-      required.forEach(id => {
-        const el = document.getElementById(id);
-        const value = el.type === 'checkbox' ? el.checked : (el.value || '').trim();
-        if (!value) { showError(id, `Please fill out ${id}.`); valid = false; }
+    if (!valid) return;
+
+    // Build a clear subject (Intent + Type + City + Name)
+    const nameVal   = (document.getElementById("name").value || "").trim();
+    const intentVal = (document.getElementById("intent").value || "Listing").trim();
+    const typeVal   = (document.getElementById("type").value   || "Property").trim();
+    const cityVal   = (document.getElementById("city").value   || "").trim();
+    const subj = `[${intentVal} ${typeVal}] ${cityVal ? cityVal + " • " : ""}New submission from ${nameVal || "Owner"}`;
+    document.getElementById("subjectField").value = subj;
+
+    // Populate Reply-To for your email client
+    const replyTo = email;
+    const replyToField = document.getElementById("replyToField");
+    if (replyToField) replyToField.value = replyTo;
+
+    // UX: disable button while sending
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    try {
+      // Try AJAX first (nice UX)
+      const formData = new FormData(form);
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        body: formData,
+        headers: { "Accept": "application/json" }
       });
-      const email = document.getElementById("email").value.trim();
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("email","Please enter a valid email."); valid = false; }
-      if (!valid) return;
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting…";
-
-      try {
-        const nameVal = (document.getElementById("name").value || "").trim();
-        const catVal = (document.getElementById("category").value || "Feedback").trim();
-        const subj = `[${catVal}] New submission from ${nameVal || "Anonymous"}`;
-        document.getElementById("subjectField").value = subj;
-
-        // Make sure Reply-To is populated for email clients
-        document.getElementById("replyToField").value = (document.getElementById("email").value || "").trim();
-
-        const formData = new FormData(form);
-        const res = await fetch(FORMSPREE_ENDPOINT, {
-          method: "POST",
-          body: formData,
-          headers: { "Accept": "application/json" }
-        });
-        if (res.ok) {
-          form.classList.add("hidden");
-          success.classList.remove("hidden");
-        } else {
-          throw new Error("Bad response");
-        }
-      } catch (err) {
-        console.error(err);
-        errorToast.classList.remove("hidden");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit";
+      if (!res.ok) {
+        // On any non-OK response, fall back to native submit (guarantees email)
+        form.removeEventListener("submit", handleSubmit);
+        form.submit();
+        return;
       }
-    });
 
-    document.getElementById("again").addEventListener("click", () => {
-      form.reset();
-      success.classList.add("hidden");
-      form.classList.remove("hidden");
-      errorToast.classList.add("hidden");
-      clearErrors();
-    });
-  </script>
+      // Success path (AJAX)
+      form.classList.add("hidden");
+      success.classList.remove("hidden");
+    } catch (err) {
+      // Network/CORS errors → fall back to native submit (guarantees email)
+      form.removeEventListener("submit", handleSubmit);
+      form.submit();
+      return;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+    }
+  }
+
+  form.addEventListener("submit", handleSubmit);
+
+  document.getElementById("again").addEventListener("click", () => {
+    form.reset();
+    success.classList.add("hidden");
+    form.classList.remove("hidden");
+    errorToast.classList.add("hidden");
+    clearErrors();
+  });
+</script>
+
 </body>
 </html>
