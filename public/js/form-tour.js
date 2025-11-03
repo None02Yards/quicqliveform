@@ -1,7 +1,6 @@
 // public/js/form-tour.js
 (function () {
-  var TOUR_KEY = "atlas.house.formTour.v1";
-
+  // Detect AR
   function isArabic() {
     var lang = (navigator.languages && navigator.languages[0]) || navigator.language || "";
     return lang.toLowerCase().indexOf("ar") === 0;
@@ -98,11 +97,12 @@
   }
 
   function startTour() {
-    if (!window.introJs) return;
+    if (!window.introJs) return false; // safety: Intro.js not loaded
+
     var ar = isArabic();
     var T = textBundle(ar);
     var steps = buildSteps(T);
-    if (!steps.length) return;
+    if (!steps.length) return false;
 
     var intro = window.introJs();
     intro.setOptions({
@@ -117,20 +117,23 @@
       tooltipClass: "atlas-tour-tip" + (ar ? " ar" : "")
     });
 
+    intro.start(); // <-- IMPORTANT: actually start the tour
+    return true;
   }
 
-const TOUR_KEY = "atlas.house.formTour.lastShownAt";
-const EXPIRE_MS = 24 * 60 * 60 * 1000; 
+  var TOUR_KEY = "atlas.house.formTour.lastShownAt";
+  var EXPIRE_MS = 24 * 60 * 60 * 1000;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const last = Number(localStorage.getItem(TOUR_KEY) || 0);
-  const now = Date.now();
-  if (!last || (now - last) > EXPIRE_MS) {
-    startTour();
-    localStorage.setItem(TOUR_KEY, String(now));
-  }
-});
-
+  document.addEventListener('DOMContentLoaded', function () {
+    var last = Number(localStorage.getItem(TOUR_KEY) || 0);
+    var now = Date.now();
+    if (!last || (now - last) > EXPIRE_MS) {
+      var started = startTour();
+      if (started) {
+        localStorage.setItem(TOUR_KEY, String(now));
+      }
+    }
+  });
 
   window.restartFormTour = function () {
     localStorage.removeItem(TOUR_KEY);
