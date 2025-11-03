@@ -1,14 +1,15 @@
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="content-language" content="en">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="A simple, polished feedback form with zero-backend using Formspree." />
   <title>Atlas House</title>
 
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <!-- Remove this if you don't have an SVG -->
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <link rel="shortcut icon" href="favicon.ico">
@@ -17,7 +18,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     :root { color-scheme: light dark; }
     html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
@@ -29,7 +32,7 @@
   <header class="mb-6 text-center">
 <div class="flex flex-col items-center gap-3">
 <img src="atlas.jpg" alt="Atlas House" class="h-16 w-16 rounded-xl shadow-sm ring-1 ring-black/5 object-cover" />
-<h1 class="text-2xl font-semibold tracking-tight">Property Form</h1>
+<h1 class="text-2xl font-semibold tracking-tight" id="name-label">Property Form</h1>
 <p class="text-gray-500">Clean. Minimal. No fuss.</p>
 </div>
 </header>
@@ -45,7 +48,7 @@
         <input type="hidden" id="replyToField" name="_replyto" value="" />
 
         <div>
-          <label class="block text-sm font-medium mb-1" for="name">Name</label>
+          <label class="block text-sm font-medium mb-1" for="name" id="name-label">Name</label>
           <input id="name" name="name" type="text" required
                  class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300"
                  autocomplete="name" aria-invalid="false">
@@ -53,7 +56,7 @@
         </div>
 
         <div>
-  <label class="block text-sm font-medium mb-1" for="phone">Phone Number</label>
+  <label class="block text-sm font-medium mb-1" for="phone" id="phone-label">Phone Number</label>
   <div class="flex rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-gray-900/10 focus-within:border-gray-300">
     <span class="flex items-center px-3 text-gray-500 border-r border-gray-200 bg-gray-50 rounded-l-xl">+20</span>
     <input id="phone" name="phone" type="tel" required
@@ -64,7 +67,7 @@
 </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1" for="email">Email</label>
+          <label class="block text-sm font-medium mb-1" for="email" id="email-label">Email</label>
           <input id="email" name="email" type="email" required
                  class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300"
                  autocomplete="email" aria-invalid="false">
@@ -73,7 +76,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1" for="intent">I want to</label>
+            <label class="block text-sm font-medium mb-1" for="intent" id="intent-label">I want to</label>
             <select id="intent" name="intent" required
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" aria-invalid="false">
               <option value="" disabled selected>Select…</option>
@@ -83,7 +86,7 @@
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="intent">Please choose Sell or Rent.</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="type">Property type</label>
+            <label class="block text-sm font-medium mb-1" for="type" id="type-label">Property type</label>
             <select id="type" name="type" required
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" aria-invalid="false">
               <option value="" disabled selected>Select type</option>
@@ -101,38 +104,38 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1" for="city">City</label>
+            <label class="block text-sm font-medium mb-1" for="city" id="city-label">City</label>
             <input id="city" name="city" type="text" required
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., Cairo">
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="city">Please enter the city.</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="neighborhood">Neighborhood (optional)</label>
+            <label class="block text-sm font-medium mb-1" for="neighborhood" id="neighborhood-label">Neighborhood (optional)</label>
             <input id="neighborhood" name="neighborhood" type="text"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., Zamalek">
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1" for="address">Address (optional)</label>
+          <label class="block text-sm font-medium mb-1" for="address" id="address-label">Address (optional)</label>
           <input id="address" name="address" type="text"
                  class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="Street, building, unit">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1" for="area">Area (m²)</label>
+            <label class="block text-sm font-medium mb-1" for="area" id="area-label">Area (m²)</label>
             <input id="area" name="area" type="number" required min="0" step="1"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., 120">
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="area">Please enter area in m².</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="bedrooms">Bedrooms</label>
+            <label class="block text-sm font-medium mb-1" for="bedrooms" id="bedrooms-label">Bedrooms</label>
             <input id="bedrooms" name="bedrooms" type="number" required min="0" step="1"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., 3">
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="bedrooms">Enter bedrooms.</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="bathrooms">Bathrooms</label>
+            <label class="block text-sm font-medium mb-1" for="bathrooms" id="bathrooms-label">Bathrooms</label>
             <input id="bathrooms" name="bathrooms" type="number" required min="0" step="1"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., 2">
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="bathrooms">Enter bathrooms.</p>
@@ -141,13 +144,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="sm:col-span-2">
-            <label class="block text-sm font-medium mb-1" for="price">Price</label>
+            <label class="block text-sm font-medium mb-1" for="price" id="price-label">Price</label>
             <input id="price" name="price" type="number" required min="0" step="0.01"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300" placeholder="e.g., 2500000">
             <p class="mt-1 hidden text-sm text-red-600" data-error-for="price">Enter asking price.</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="currency">Currency</label>
+            <label class="block text-sm font-medium mb-1" for="currency" id="currency-label">Currency</label>
             <select id="currency" name="currency" required
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300">
               <option value="" disabled selected>Select</option>
@@ -163,7 +166,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1" for="furnished">Furnished</label>
+            <label class="block text-sm font-medium mb-1" for="furnished" id="furnished-label">Furnished</label>
             <select id="furnished" name="furnished"
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300">
               <option value="" selected>Not specified</option>
@@ -173,28 +176,28 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" for="available">Available from</label>
+            <label class="block text-sm font-medium mb-1" for="available" id="available-label">Available from</label>
             <input id="available" name="available" type="date"
                    class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300">
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1" for="message">Extra details (optional)</label>
+          <label class="block text-sm font-medium mb-1" for="message" id="message-label">Extra details (optional)</label>
           <textarea id="message" name="message" rows="4"
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300"
                     placeholder="Any special features, landmarks, or notes"></textarea>
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1" for="message">Message</label>
+          <label class="block text-sm font-medium mb-1" for="message" id="message-label">Message</label>
           <textarea id="message" name="message" rows="4" required
                     class="w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300"
                     placeholder="Tell us what’s on your mind…" aria-invalid="false"></textarea>
           <p class="mt-1 hidden text-sm text-red-600" data-error-for="message">Please add a message.</p>
         </div>
 
-        <div class="flex items-start gap-2">
+        <div>
           <input id="consent" type="checkbox" required class="mt-1 h-4 w-4 rounded border-gray-300">
           <label for="consent" class="text-sm text-gray-600">I consent to having this information processed for the purpose of responding.</label>
         </div>
@@ -223,6 +226,15 @@
         Something went sideways. Please try again in a moment.
       </div>
     </section>
+
+      <div class="flex justify-center space-x-6 mt-8">
+  <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="text-blue-600 hover:opacity-75 text-2xl">
+    <i class="fab fa-facebook"></i>
+  </a>
+  <a href="https://wa.me/yourphonenumber" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="text-green-500 hover:opacity-75 text-2xl">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
   </main>
 
 <script>
@@ -245,13 +257,11 @@
     document.querySelectorAll("[aria-invalid]").forEach(el => el.setAttribute("aria-invalid", "false"));
   }
 
-  // Named handler so we can remove it when falling back to native submit
   async function handleSubmit(e) {
     e.preventDefault();
     clearErrors(); 
     errorToast.classList.add("hidden");
 
-    // Required fields
     const required = ["name","phone","intent","type","city","area","bedrooms","bathrooms","price","currency","consent"];
     let valid = true;
     for (const id of required) {
@@ -260,14 +270,12 @@
       if (!value) { showError(id, `Please fill out ${id}.`); valid = false; }
     }
 
-    // Optional email format check
     const email = (document.getElementById("email")?.value || "").trim();
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { 
       showError("email","Please enter a valid email."); 
       valid = false; 
     }
 
-    // Basic phone sanity (lenient; keeps +20 UX happy)
     const phone = (document.getElementById("phone")?.value || "").trim();
     if (!/^[+\d][\d\s().-]{6,}$/.test(phone)) {
       showError("phone","Please enter a valid phone number.");
@@ -276,7 +284,6 @@
 
     if (!valid) return;
 
-    // Build a clear subject (Intent + Type + City + Name)
     const nameVal   = (document.getElementById("name").value || "").trim();
     const intentVal = (document.getElementById("intent").value || "Listing").trim();
     const typeVal   = (document.getElementById("type").value   || "Property").trim();
@@ -284,17 +291,14 @@
     const subj = `[${intentVal} ${typeVal}] ${cityVal ? cityVal + " • " : ""}New submission from ${nameVal || "Owner"}`;
     document.getElementById("subjectField").value = subj;
 
-    // Populate Reply-To for your email client
     const replyTo = email;
     const replyToField = document.getElementById("replyToField");
     if (replyToField) replyToField.value = replyTo;
 
-    // UX: disable button while sending
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting…";
 
     try {
-      // Try AJAX first (nice UX)
       const formData = new FormData(form);
       const res = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
@@ -303,17 +307,14 @@
       });
 
       if (!res.ok) {
-        // On any non-OK response, fall back to native submit (guarantees email)
         form.removeEventListener("submit", handleSubmit);
         form.submit();
         return;
       }
 
-      // Success path (AJAX)
       form.classList.add("hidden");
       success.classList.remove("hidden");
     } catch (err) {
-      // Network/CORS errors → fall back to native submit (guarantees email)
       form.removeEventListener("submit", handleSubmit);
       form.submit();
       return;
@@ -334,5 +335,7 @@
   });
 </script>
 
+
+<script src="autotranslate.js" defer></script>
 </body>
 </html>
