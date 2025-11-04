@@ -1,12 +1,19 @@
 // public/js/form-tour.js
 (function () {
-  // Detect AR
-  function isArabic() {
-    var lang = (navigator.languages && navigator.languages[0]) || navigator.language || "";
-    return lang.toLowerCase().indexOf("ar") === 0;
-  }
-  function $(sel) { return document.querySelector(sel); }
+  // Storage keys + cadence
+  var LANG_KEY = "atlas.house.formTour.lang";            // "ar" | "en"
+  var SHOWN_KEY = "atlas.house.formTour.lastShownAt";    // timestamp (ms)
+  var EXPIRE_MS = 24 * 60 * 60 * 1000;                   // 24 hours
 
+  function $(sel) { return document.querySelector(sel); }
+  function getLang() {
+    var saved = localStorage.getItem(LANG_KEY);
+    return (saved === "en" || saved === "ar") ? saved : "ar"; // default AR
+  }
+  function setLang(lang) { localStorage.setItem(LANG_KEY, lang === "en" ? "en" : "ar"); }
+  function isAR(lang) { return (lang || getLang()) === "ar"; }
+
+  // ---------- Copy ----------
   function textBundle(ar) {
     return ar ? {
       introTitle: "مرحباً!",
@@ -96,10 +103,43 @@
     return steps;
   }
 
-  function startTour() {
-    if (!window.introJs) return false; // safety: Intro.js not loaded
+  function mountLangToggle(currLang) {
+    var old = document.querySelector(".form-tour-lang");
+    if (old) old.remove();
 
-    var ar = isArabic();
+    var wrap = document.createElement("div");
+    wrap.className = "form-tour-lang";
+    wrap.innerHTML =
+      '<button type="button" data-lang="ar">العربية</button>' +
+      '<button type="button" data-lang="en">English</button>';
+
+    document.body.appendChild(wrap);
+
+    var arBtn = wrap.querySelector('button[data-lang="ar"]');
+    var enBtn = wrap.querySelector('button[data-lang="en"]');
+    (currLang === "ar" ? arBtn : enBtn).classList.add("active");
+
+    var click = function (lang) {
+      if (lang === currLang) return;
+      setLang(lang);
+      if (window.introJs) { try { window.introJs().exit(); } catch (_) {} }
+      startTour(lang, /*fromToggle*/true);
+    };
+    arBtn.addEventListener('click', function(){ click("ar"); });
+    enBtn.addEventListener('click', function(){ click("en"); });
+
+    return wrap;
+  }
+  function removeLangToggle() {
+    var el = document.querySelector(".form-tour-lang");
+    if (el) el.remove();
+  }
+
+  function startTour(lang, fromToggle) {
+    if (!window.introJs) return false;
+
+    var useLang = lang || getLang();
+    var ar = isAR(useLang);
     var T = textBundle(ar);
     var steps = buildSteps(T);
     if (!steps.length) return false;
@@ -117,26 +157,32 @@
       tooltipClass: "atlas-tour-tip" + (ar ? " ar" : "")
     });
 
-    intro.start(); // <-- IMPORTANT: actually start the tour
+    // Show the language pill during the tour
+    mountLangToggle(useLang);
+
+    intro.oncomplete(function () {
+      if (!fromToggle) removeLangToggle(); // hide when tour ends
+    });
+    intro.onexit(function () {
+      if (!fromToggle) removeLangToggle(); // hide when user closes
+    });
+
+    intro.start();
     return true;
   }
 
-  var TOUR_KEY = "atlas.house.formTour.lastShownAt";
-  var EXPIRE_MS = 24 * 60 * 60 * 1000;
-
   document.addEventListener('DOMContentLoaded', function () {
-    var last = Number(localStorage.getItem(TOUR_KEY) || 0);
+    var last = Number(localStorage.getItem(SHOWN_KEY) || 0);
     var now = Date.now();
     if (!last || (now - last) > EXPIRE_MS) {
-      var started = startTour();
-      if (started) {
-        localStorage.setItem(TOUR_KEY, String(now));
-      }
+      var started = startTour(getLang());
+      if (started) localStorage.setItem(SHOWN_KEY, String(now));
+    } else {
+      removeLangToggle();
     }
   });
 
   window.restartFormTour = function () {
-    localStorage.removeItem(TOUR_KEY);
-    startTour();
+    startTour(getLang());
   };
 })();

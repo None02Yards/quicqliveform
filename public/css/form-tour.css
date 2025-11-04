@@ -1,8 +1,5 @@
-/* ===== Atlas House — Form Tour (Intro.js) Glassmorphism Theme ===== */
 
-/* Overlay: blur + dim the background (behind the highlighted element) */
 .introjs-overlay {
-  /* Blur whatever is behind the overlay */
   backdrop-filter: blur(6px) saturate(115%);
   -webkit-backdrop-filter: blur(6px) saturate(115%);
   background: rgba(15, 23, 42, 0.35); /* slate-900 @ 35% */
@@ -10,7 +7,6 @@
   z-index: 9998 !important; /* keep under tooltip/helper layer */
 }
 
-/* Highlight ring around the focused element */
 .introjs-helperLayer {
   background: rgba(255, 255, 255, 0.04);
   box-shadow:
@@ -20,7 +16,6 @@
   transition: box-shadow 200ms ease, background 200ms ease;
 }
 
-/* Tooltip (the “card”): frosted glass */
 .introjs-tooltip,
 .atlas-tour-tip {
   background: rgba(255, 255, 255, 0.62);
@@ -35,12 +30,10 @@
   max-width: 360px; /* keep copy tight */
 }
 
-/* Tooltip arrow styling to match glassy card */
 .introjs-arrow {
   filter: drop-shadow(0 2px 6px rgba(2, 6, 23, 0.25));
 }
 
-/* Title + body copy rhythm */
 .introjs-tooltip-title {
   font-weight: 600;
   margin-bottom: 6px;
@@ -52,14 +45,12 @@
   color: #1f2937; /* gray-800 */
 }
 
-/* Footer actions */
 .introjs-tooltipbuttons {
   display: flex;
   gap: 8px;
   margin-top: 10px;
 }
 
-/* Buttons: subtle, modern */
 .introjs-button {
   border-radius: 10px !important;
   border: 1px solid rgba(148, 163, 184, 0.5) !important; /* slate-400 */
@@ -74,7 +65,6 @@
   border-color: rgba(100, 116, 139, 0.75) !important; /* slate-500 */
 }
 
-/* Primary action emphasis (Next / Done) */
 .introjs-nextbutton,
 .introjs-donebutton {
   background: rgba(15, 23, 42, 0.9) !important;  /* slate-900 */
@@ -86,7 +76,6 @@
   background: #0b1223 !important;
 }
 
-/* Progress dots and bullets off by default; if enabled, keep minimal */
 .introjs-bullets li a {
   background: rgba(148, 163, 184, 0.6); /* slate-400 */
 }
@@ -94,7 +83,6 @@
   background: #0f172a; /* slate-900 */
 }
 
-/* RTL support for Arabic */
 .atlas-tour-tip.ar {
   direction: rtl;
   text-align: right;
@@ -103,7 +91,6 @@
   flex-direction: row-reverse;
 }
 
-/* Dark mode polish (if user prefers dark) */
 @media (prefers-color-scheme: dark) {
   .introjs-overlay {
     background: rgba(2, 6, 23, 0.5);
@@ -128,10 +115,57 @@
   }
 }
 
-/* Ensure the tour sits above Tailwind components */
 .introjs-fixParent,
 .introjs-helperLayer,
 .introjs-tooltip,
 .introjs-overlay {
   z-index: 9999 !important;
+}
+
+
+/* === Tour language switcher (glassy pill) === */
+.form-tour-lang {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10000;
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.62);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: 0 8px 24px rgba(2,6,23,0.18);
+  font-size: 12px;
+}
+.form-tour-lang button {
+  border: 1px solid rgba(148,163,184,0.45); /* slate-400 */
+  background: rgba(255,255,255,0.7);
+  color: #252525; /* slate-900 */
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.form-tour-lang button.active {
+  background: rgba(124, 145, 194, 0.9); /* slate-900 */
+  color: #fff;
+  border-color: rgba(155, 149, 175, 0.9);
+}
+@media (prefers-color-scheme: dark) {
+  .form-tour-lang {
+    background: rgba(15,23,42,0.55);
+    border-color: rgba(255,255,255,0.12);
+    color: #e5e7eb;
+  }
+  .form-tour-lang button {
+    background: rgba(30,41,59,0.6);
+    border-color: rgba(148,163,184,0.35);
+    color: #e5e7eb;
+  }
+  .form-tour-lang button.active {
+    background: #0f172a;
+    border-color: #0f172a;
+  }
 }
